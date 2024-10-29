@@ -1,25 +1,13 @@
 flutter_native_splash:
-  # Splash screen pertama
-  color: "#697684"
-  image: assets/images/LOGOACTIVECORE1.png
-  
-  # Konfigurasi untuk Android 12+
+  color: "#FFFFFF"
+  color_dark: "#697684"
+  image: assets\images\LOGOACTIVECORE2.0.png
+  image_dark: assets\images\LOGOACTIVECORE1.0.png
+
   android_12:
-    color: "#ffffff"
-    icon_background_color: "#ffffff"
-  
-  # Menentukan posisi gambar untuk Android dan iOS
-  android_gravity: center # Atur posisi gambar di tengah
-  ios_content_mode: scaleAspectFit # Sesuaikan gambar agar tetap dalam proporsi
+    color: "#FFFFFF"
+    color_dark: "#697684"
+    image: assets\images\LOGOACTIVECORE2.0.png
+    image_dark: assets\images\LOGOACTIVECORE1.0.png
 
-  # Platform yang ingin diaktifkan
-  android: true
-  ios: true
-  web: false
-
-  # Gambar spesifik untuk platform
-  image_android: assets/images/LOGOACTIVECORE1.png
-  image_ios: assets/images/LOGOACTIVECORE1.png
-  
-  # Opsi lain
-  fullscreen: true
+web: false
