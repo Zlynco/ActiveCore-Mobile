@@ -62,10 +62,9 @@ flutter:
 
   # Tambahkan aset di sini
   assets:
-    - assets/images/ActiveCore_icon.png # Pastikan jalur ke ikon Anda di sini
-    - assets/images/LOGOACTIVECORE1.png
-    - assets/images/LOGOACTIVECORE2.png
-    - assets/backgroundlight.png
+    - assets/ # Pastikan jalur ke ikon Anda di sini
+    - assets/icons/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

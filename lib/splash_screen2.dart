@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import './home_screen.dart';
+import 'features/authentication/role.dart';
 
 class SplashScreen2 extends StatefulWidget {
   const SplashScreen2({super.key});
@@ -13,14 +13,31 @@ class SplashScreenState extends State<SplashScreen2> {
   @override
   void initState() {
     super.initState(); // Call the superclass's initState method
-
-    // Start a timer to navigate to the HomeScreen after 3 seconds
+// Mulai timer untuk navigasi ke SplashScreen2 setelah 2 detik
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      Navigator.of(context).pushReplacement(_createRoute());
     });
+  }
+
+  // Membuat route dengan animasi fade
+  Route _createRoute() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => const SelectRole(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = 0.0; // Memulai dari transparan
+        const end = 1.0; // Berhenti di tampilan penuh
+        const curve = Curves.easeInOut; // Kurva animasi
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var opacityAnimation = animation.drive(tween);
+
+        return FadeTransition(
+          opacity: opacityAnimation,
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 500), // Durasi transisi
+    );
   }
 
   @override
