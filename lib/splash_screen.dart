@@ -15,7 +15,7 @@ class SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     // Mulai timer untuk navigasi ke SplashScreen2 setelah 2 detik
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(milliseconds: 1500), () {
       Navigator.of(context).pushReplacement(_createRoute());
     });
   }

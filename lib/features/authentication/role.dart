@@ -1,3 +1,5 @@
+import 'package:active_core/features/authentication/AuthCoach/login.dart';
+import 'package:active_core/features/authentication/AuthMember/login.dart';
 import 'package:flutter/material.dart';
 
 class SelectRole extends StatelessWidget {
@@ -33,6 +35,11 @@ class SelectRole extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         // Aksi saat tombol ditekan
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreenMember(),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white, // Warna latar belakang tombol
@@ -47,13 +54,16 @@ class SelectRole extends StatelessWidget {
                           // Menggunakan gambar dari assets
                           Image.asset(
                             'assets/icons/teamwork.png',
-                            width: 36, // Sesuaikan ukuran gambar
-                            height: 36, // Sesuaikan ukuran gambar
+                            width: 50, // Sesuaikan ukuran gambar
+                            height: 50, // Sesuaikan ukuran gambar
                           ),
                           const SizedBox(width: 12), // Jarak antara ikon dan teks
                           const Text(
                             'As Member',
-                            style: TextStyle(color: Colors.black), // Warna teks
+                            style: TextStyle(
+                              color: Colors.black, // Warna teks
+                              fontSize: 16, // Ukuran font
+                            ),
                           ),
                         ],
                       ),
@@ -67,6 +77,11 @@ class SelectRole extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         // Aksi saat tombol ditekan
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreenCoach(),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white, // Warna latar belakang tombol
@@ -81,13 +96,16 @@ class SelectRole extends StatelessWidget {
                           // Menggunakan gambar dari assets
                           Image.asset(
                             'assets/icons/coach (1).png',
-                            width: 36, // Sesuaikan ukuran gambar
-                            height: 36, // Sesuaikan ukuran gambar
+                            width: 50, // Sesuaikan ukuran gambar
+                            height: 50, // Sesuaikan ukuran gambar
                           ),
                           const SizedBox(width: 12), // Jarak antara ikon dan teks
                           const Text(
                             'As Coach',
-                            style: TextStyle(color: Colors.black), // Warna teks
+                            style: TextStyle(
+                              color: Colors.black, // Warna teks
+                              fontSize: 16, // Ukuran font
+                            ),
                           ),
                         ],
                       ),
