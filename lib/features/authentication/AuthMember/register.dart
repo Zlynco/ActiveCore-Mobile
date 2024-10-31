@@ -1,10 +1,66 @@
-import 'package:active_core/widget/passwordfield.dart';
+import 'package:active_core/widget/pwfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:active_core/features/authentication/AuthMember/login.dart';
 
-class RegisterScreenMember extends StatelessWidget {
-  const RegisterScreenMember({super.key});
+class RegisterScreenMember extends StatefulWidget {
+  final String role;
+
+  const RegisterScreenMember({super.key, required this.role});
+
+  @override
+  RegisterScreenMemberState createState() => RegisterScreenMemberState();
+}
+
+class RegisterScreenMemberState extends State<RegisterScreenMember> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+
+  void register(BuildContext context) {
+    // Validasi input
+    String name = nameController.text.trim();
+    String email = emailController.text.trim();
+    String phoneNumber = phoneController.text.trim();
+    String password = passwordController.text.trim();
+    String passwordconfirmation = confirmPasswordController.text.trim();
+
+    if (name.isEmpty ||
+        email.isEmpty ||
+        phoneNumber.isEmpty ||
+        password.isEmpty ||
+        passwordconfirmation.isEmpty) {
+      // Tampilkan snackbar atau dialog untuk menunjukkan kesalahan
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields.')),
+      );
+      return;
+    }
+
+    if (password != passwordconfirmation) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match.')),
+      );
+      return;
+    }
+
+    // Tambahkan logika untuk menyimpan data pengguna ke database di sini
+    // Jika registrasi berhasil, arahkan ke halaman login
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Registration successful!')),
+    );
+
+    // Arahkan pengguna kembali ke halaman login
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginScreenMember(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +90,9 @@ class RegisterScreenMember extends StatelessWidget {
                 ),
                 const SizedBox(height: 10), // Jarak antara logo dan teks
                 // Judul
-                const Text(
-                  'Register',
-                  style: TextStyle(
+                Text(
+                  'Register as ${widget.role}', // Menampilkan role yang dipilih
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
@@ -72,77 +128,70 @@ class RegisterScreenMember extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Field Nama
                       const Text(
                         'Name',
                         style: TextStyle(
-                          color: Color(0xFF697684), // Warna tautan
+                          color: Color(0xFF697684),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                          height: 8), // Jarak antara Text dan TextField
-                      const TextField(
-                        decoration: InputDecoration(
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 14), // Jarak antar field
-                      // Field Email
+                      const SizedBox(height: 14),
                       const Text(
                         'Email',
                         style: TextStyle(
-                          color: Color(0xFF697684), // Warna tautan
+                          color: Color(0xFF697684),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                          height: 8), // Jarak antara Text dan TextField
-                      const TextField(
-                        decoration: InputDecoration(
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: emailController,
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 14), // Jarak antar field
-                      // Field Phone Number
+                      const SizedBox(height: 14),
                       const Text(
                         'Phone Number',
                         style: TextStyle(
-                          color: Color(0xFF697684), // Warna tautan
+                          color: Color(0xFF697684),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                          height: 8), // Jarak antara Text dan TextField
+                      const SizedBox(height: 8),
                       TextField(
-                        keyboardType:
-                            TextInputType.phone, // Menampilkan keyboard angka
+                        controller: phoneController,
+                        keyboardType: TextInputType.phone,
                         inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter
-                              .digitsOnly, // Hanya mengizinkan angka
+                          FilteringTextInputFormatter.digitsOnly,
                         ],
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 14), // Jarak antar field
-                      // Field Password
-                      const PasswordField(label: 'Password'),
-                      const SizedBox(height: 14), // Jarak antar field
-                      // Field Confirm Password
-                      const PasswordField(label: 'Confirm Password'),
-
-                      const SizedBox(height: 35), // Jarak sebelum tombol login
-                      // Tombol Login
+                      const SizedBox(height: 14),
+                      PasswordField(
+                          label: 'Password', controller: passwordController),
+                      const SizedBox(height: 14),
+                      PasswordField(
+                          label: 'Confirm Password',
+                          controller: confirmPasswordController),
+                      const SizedBox(height: 35),
                       SizedBox(
-                        width: double.infinity, // Set the width to infinity
+                        width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Aksi saat tombol login ditekan
+                            register(context); // Panggil fungsi register dengan konteks
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color(0xFF697684), // Warna tombol
+                            backgroundColor: const Color(0xFF697684),
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -157,9 +206,7 @@ class RegisterScreenMember extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                          height: 10), // Jarak sebelum tautan registrasi
-                      // Tautan untuk registrasi
+                      const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -169,12 +216,12 @@ class RegisterScreenMember extends StatelessWidget {
                           ),
                           TextButton(
                             onPressed: () {
-                              // Aksi saat tautan register ditekan
                               Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreenMember(),
-                          ),
-                        );
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const LoginScreenMember(),
+                                ),
+                              );
                             },
                             child: const Text(
                               'Log In',

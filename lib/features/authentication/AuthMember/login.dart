@@ -1,10 +1,47 @@
+import 'package:active_core/api/auth_services.dart';
 import 'package:active_core/features/authentication/AuthMember/register.dart';
-import 'package:active_core/home_screen.dart';
+import 'package:active_core/home_screen_member.dart';
 import 'package:active_core/widget/passwordfield.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreenMember extends StatelessWidget {
+class LoginScreenMember extends StatefulWidget {
   const LoginScreenMember({super.key});
+
+  @override
+  LoginScreenMemberState createState() => LoginScreenMemberState();
+}
+
+class LoginScreenMemberState extends State<LoginScreenMember> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String? _errorMessage; // Menyimpan pesan kesalahan
+
+  Future<void> _login() async {
+    // Ambil nilai dari controller
+    String name = _nameController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    // Panggil fungsi login dari AuthService
+    final result = await AuthService().login(name, email, password);
+    
+    if (mounted) { // Cek apakah widget masih terpasang
+      if (result != null && result['role'] == 'member') {
+        // Jika login berhasil dan role adalah 'member', navigasi ke HomeScreen
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreenMember()),
+          (Route<dynamic> route) => false, // Menghapus semua route sebelumnya
+        );
+      } else {
+        // Jika login gagal atau role bukan 'member', tampilkan pesan kesalahan
+        setState(() {
+          _errorMessage = 'Login failed. Please check your credentials or ensure you are a member.';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +50,8 @@ class LoginScreenMember extends StatelessWidget {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF697684), // Warna atas
-              Colors.white, // Warna bawah
+              Color(0xFF697684), 
+              Colors.white, 
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -29,16 +66,16 @@ class LoginScreenMember extends StatelessWidget {
               children: [
                 Image.asset(
                   'assets/images/ActiveCore_icon.png',
-                  width: 100, // Sesuaikan ukuran logo
-                  height: 100, // Sesuaikan ukuran logo
+                  width: 100, 
+                  height: 100, 
                 ),
-                const SizedBox(height: 10), // Jarak antara logo dan teks
+                const SizedBox(height: 8), // Jarak antara logo dan teks
                 // Judul
                 const Text(
                   'Sign in to your account',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 40,
+                    fontSize: 38,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -50,21 +87,20 @@ class LoginScreenMember extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 40), // Jarak sebelum form
+                const SizedBox(height: 20), // Jarak sebelum form
                 // Form
                 Container(
-                  height: 480,
+                  height: 510,
                   decoration: BoxDecoration(
-                    color: Colors.white, // Warna latar belakang form
+                    color: Colors.white, 
                     borderRadius:
-                        BorderRadius.circular(8.0), // Sudut melengkung
+                        BorderRadius.circular(8.0), 
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black
-                            .withOpacity(0.2), // Mengatur warna bayangan
-                        offset: const Offset(0, 4), // Posisi bayangan
-                        blurRadius: 8, // Seberapa kabur bayangan
-                        spreadRadius: 4, // Seberapa jauh bayangan menyebar
+                        color: Colors.black.withOpacity(0.2), 
+                        offset: const Offset(0, 4), 
+                        blurRadius: 8, 
+                        spreadRadius: 4,
                       ),
                     ],
                   ),
@@ -80,10 +116,10 @@ class LoginScreenMember extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                          height: 8), // Jarak antara Text dan TextField
-                      const TextField(
-                        decoration: InputDecoration(
+                      const SizedBox(height: 8), // Jarak antara Text dan TextField
+                      TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -96,18 +132,17 @@ class LoginScreenMember extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                          height: 8), // Jarak antara Text dan TextField
-                      const TextField(
-                        decoration: InputDecoration(
+                      const SizedBox(height: 8), // Jarak antara Text dan TextField
+                      TextField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                         ),
                       ),
                       const SizedBox(height: 14), // Jarak antar field
                       // Field Password
-                      const PasswordField(label: 'Password'),
-                      const SizedBox(
-                          height: 8), // Jarak sebelum forgot password
+                      PasswordField(label: 'Password', controller: _passwordController),
+                      const SizedBox(height: 8), // Jarak sebelum forgot password
                       // Tautan Forgot Password
                       Align(
                         alignment: Alignment.centerRight,
@@ -118,7 +153,7 @@ class LoginScreenMember extends StatelessWidget {
                           child: const Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              color: Color(0xFF697684), // Warna tautan
+                              color: Color(0xFF697684), 
                             ),
                           ),
                         ),
@@ -128,19 +163,9 @@ class LoginScreenMember extends StatelessWidget {
                       SizedBox(
                         width: double.infinity, // Set the width to infinity
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Aksi saat tombol login ditekan
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const HomeScreen()),
-                              (Route<dynamic> route) =>
-                                  false, // Menghapus semua route sebelumnya
-                            );
-                          },
+                          onPressed: _login, // Panggil fungsi login
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color(0xFF697684), // Warna tombol
+                            backgroundColor: const Color(0xFF697684), // Warna tombol
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -155,8 +180,9 @@ class LoginScreenMember extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                          height: 10), // Jarak sebelum tautan registrasi
+                      // Menampilkan pesan kesalahan
+                      _centeredErrorMessage(),
+                      const SizedBox(height: 10), // Jarak sebelum tautan registrasi
                       // Tautan untuk registrasi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -171,7 +197,7 @@ class LoginScreenMember extends StatelessWidget {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      const RegisterScreenMember(),
+                                      const RegisterScreenMember(role: 'member'),
                                 ),
                               );
                             },
@@ -194,5 +220,22 @@ class LoginScreenMember extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _centeredErrorMessage() {
+    return _errorMessage != null
+        ? Align(
+            alignment: Alignment.center, // Center the error message
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  top: 0), // Optional: add some space above
+              child: Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center, // Center text alignment
+              ),
+            ),
+          )
+        : Container();
   }
 }

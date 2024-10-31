@@ -1,10 +1,47 @@
-import 'package:active_core/widget/passwordfield.dart';
+import 'package:active_core/widget/pwfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:active_core/features/authentication/AuthCoach/login.dart';
 
-class RegisterScreenCoach extends StatelessWidget {
-  const RegisterScreenCoach({super.key});
+class RegisterScreenCoach extends StatefulWidget {
+  final String role;
+
+  const RegisterScreenCoach({super.key, required this.role});
+
+  @override
+  RegisterScreenCoachState createState() => RegisterScreenCoachState();
+}
+
+class RegisterScreenCoachState extends State<RegisterScreenCoach> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  void register() {
+    // Validasi input
+    String name = nameController.text.trim();
+    String email = emailController.text.trim();
+    String phone = phoneController.text.trim();
+    String password = passwordController.text.trim();
+    String confirmPassword = confirmPasswordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      // Tampilkan snackbar atau dialog untuk menunjukkan kesalahan
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields.')),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match.')),
+      );
+      return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +50,8 @@ class RegisterScreenCoach extends StatelessWidget {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF697684), // Warna atas
-              Colors.white, // Warna bawah
+              Color(0xFF697684),
+              Colors.white,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -29,20 +66,19 @@ class RegisterScreenCoach extends StatelessWidget {
               children: [
                 Image.asset(
                   'assets/images/ActiveCore_icon.png',
-                  width: 100, // Sesuaikan ukuran logo
-                  height: 100, // Sesuaikan ukuran logo
+                  width: 100,
+                  height: 100,
                 ),
-                const SizedBox(height: 10), // Jarak antara logo dan teks
-                // Judul
-                const Text(
-                  'Register',
-                  style: TextStyle(
+                const SizedBox(height: 10),
+                Text(
+                  'Register as ${widget.role}',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8), // Jarak antara judul dan subjudul
+                const SizedBox(height: 8),
                 const Text(
                   'Create your account',
                   style: TextStyle(
@@ -50,21 +86,18 @@ class RegisterScreenCoach extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 40), // Jarak sebelum form
-                // Form
+                const SizedBox(height: 40),
                 Container(
                   height: 620,
                   decoration: BoxDecoration(
-                    color: Colors.white, // Warna latar belakang form
-                    borderRadius:
-                        BorderRadius.circular(8.0), // Sudut melengkung
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black
-                            .withOpacity(0.2), // Mengatur warna bayangan
-                        offset: const Offset(0, 4), // Posisi bayangan
-                        blurRadius: 8, // Seberapa kabur bayangan
-                        spreadRadius: 4, // Seberapa jauh bayangan menyebar
+                        color: Colors.black.withOpacity(0.2),
+                        offset: const Offset(0, 4),
+                        blurRadius: 8,
+                        spreadRadius: 4,
                       ),
                     ],
                   ),
@@ -72,77 +105,68 @@ class RegisterScreenCoach extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Field Nama
                       const Text(
                         'Name',
                         style: TextStyle(
-                          color: Color(0xFF697684), // Warna tautan
+                          color: Color(0xFF697684),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                          height: 8), // Jarak antara Text dan TextField
-                      const TextField(
-                        decoration: InputDecoration(
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 14), // Jarak antar field
-                      // Field Email
+                      const SizedBox(height: 14),
                       const Text(
                         'Email',
                         style: TextStyle(
-                          color: Color(0xFF697684), // Warna tautan
+                          color: Color(0xFF697684),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                          height: 8), // Jarak antara Text dan TextField
-                      const TextField(
-                        decoration: InputDecoration(
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: emailController,
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 14), // Jarak antar field
-                      // Field Phone Number
+                      const SizedBox(height: 14),
                       const Text(
                         'Phone Number',
                         style: TextStyle(
-                          color: Color(0xFF697684), // Warna tautan
+                          color: Color(0xFF697684),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                          height: 8), // Jarak antara Text dan TextField
+                      const SizedBox(height: 8),
                       TextField(
-                        keyboardType:
-                            TextInputType.phone, // Menampilkan keyboard angka
+                        controller: phoneController,
+                        keyboardType: TextInputType.phone,
                         inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter
-                              .digitsOnly, // Hanya mengizinkan angka
+                          FilteringTextInputFormatter.digitsOnly,
                         ],
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                         ),
                       ),
-                      const SizedBox(height: 14), // Jarak antar field
-                      // Field Password
-                      const PasswordField(label: 'Password'),
-                      const SizedBox(height: 14), // Jarak antar field
-                      // Field Confirm Password
-                      const PasswordField(label: 'Confirm Password'),
+                      const SizedBox(height: 14),
+                      PasswordField(
+                          label: 'Password', controller: passwordController),
+                      const SizedBox(height: 14),
+                      PasswordField(
+                          label: 'Password', controller: confirmPasswordController),
 
-                      const SizedBox(height: 35), // Jarak sebelum tombol login
-                      // Tombol Login
+                      const SizedBox(height: 35),
                       SizedBox(
-                        width: double.infinity, // Set the width to infinity
+                        width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Aksi saat tombol login ditekan
-                          },
+                          onPressed: register, // Ganti dengan fungsi register
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color(0xFF697684), // Warna tombol
+                            backgroundColor: const Color(0xFF697684),
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -157,9 +181,7 @@ class RegisterScreenCoach extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                          height: 10), // Jarak sebelum tautan registrasi
-                      // Tautan untuk registrasi
+                      const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -169,7 +191,6 @@ class RegisterScreenCoach extends StatelessWidget {
                           ),
                           TextButton(
                             onPressed: () {
-                              // Aksi saat tautan register ditekan
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) =>
