@@ -1,6 +1,6 @@
 import 'package:active_core/api/auth_services.dart';
 import 'package:active_core/features/authentication/AuthCoach/register.dart';
-import 'package:active_core/home_screen_coach.dart';
+import 'package:active_core/screen/coach/home_screen_coach.dart';
 import 'package:active_core/widget/passwordfield.dart';
 import 'package:flutter/material.dart';
 

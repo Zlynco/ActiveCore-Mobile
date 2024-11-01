@@ -1,6 +1,6 @@
 import 'package:active_core/api/auth_services.dart';
 import 'package:active_core/features/authentication/AuthMember/register.dart';
-import 'package:active_core/home_screen_member.dart';
+import 'package:active_core/screen/member/home_screen_member.dart';
 import 'package:active_core/widget/passwordfield.dart';
 import 'package:flutter/material.dart';
 

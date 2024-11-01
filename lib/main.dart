@@ -12,7 +12,9 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       title: 'ActiveCore',
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: SplashScreen(
+        
+      ),
     );
   }
 }
