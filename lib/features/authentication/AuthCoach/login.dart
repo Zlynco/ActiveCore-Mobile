@@ -17,33 +17,51 @@ class LoginScreenCoachState extends State<LoginScreenCoach> {
   final TextEditingController _passwordController = TextEditingController();
   String? _errorMessage; // Menyimpan pesan kesalahan
 
-  Future<void> _login() async {
-    // Ambil nilai dari controller
-    String name = _nameController.text;
-    String email = _emailController.text;
-    String password = _passwordController.text;
+ Future<void> _login() async {
+  // Ambil nilai dari controller
+  String name = _nameController.text;
+  String email = _emailController.text;
+  String password = _passwordController.text;
 
+  try {
     // Panggil fungsi login dari AuthService
     final result = await AuthService().login(name, email, password);
 
     if (mounted) {
       // Cek apakah widget masih terpasang
-      if (result != null && result['role'] == 'coach') {
-        // Jika login berhasil dan role adalah 'coach', navigasi ke HomeScreen
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreenCoach()),
-          (Route<dynamic> route) => false, // Menghapus semua route sebelumnya
-        );
-      } else {
-        // Jika login gagal atau role bukan 'coach', tampilkan pesan kesalahan
-        setState(() {
-          _errorMessage =
-              'Login failed. Please check your credentials or ensure you are a coach.';
-        });
+      if (result != null) {
+        // Cek status dan role
+        if (result['role'] == 'coach') {
+          if (result['status'] == 'pending') {
+            setState(() {
+              _errorMessage = 'Your coach registration is pending approval. Please wait until an admin approves your registration.';
+            });
+          } else if (result['status'] == 'rejected') {
+            setState(() {
+              _errorMessage = 'Your coach registration has been rejected. Please contact support for more information.';
+            });
+          } else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreenCoach()),
+              (Route<dynamic> route) => false,
+            );
+          }
+        } else {
+          setState(() {
+            _errorMessage = 'Login failed. Please check your credentials or ensure you are a coach.';
+          });
+        }
       }
     }
+  } catch (e) {
+    // Tangani kesalahan yang mungkin terjadi saat memanggil API
+    setState(() {
+      _errorMessage = e.toString(); // Tampilkan kesalahan
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

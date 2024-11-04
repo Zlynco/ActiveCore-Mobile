@@ -21,19 +21,27 @@ class AuthService {
     }
   }
 
-  Future<bool> register(String name, String email, String phoneNumber, String passwordconfirmation,String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/register'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'name': name, 'email': email, 'phone_number': phoneNumber,'password': password, 'password_confirmation': passwordconfirmation}),
-    );
+  Future<bool> register(String name, String email, String phoneNumber, String passwordConfirmation, String password, String role) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/register'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'name': name,
+      'email': email,
+      'phone_number': phoneNumber,
+      'password': password,
+      'password_confirmation': passwordConfirmation,
+      'role': role, // Tambahkan role ke body
+    }),
+  );
 
-    if (response.statusCode == 201) {
-      // Registrasi berhasil
-      return true;
-    } else {
-      // Registrasi gagal
-      return false;
-    }
+  if (response.statusCode == 201) {
+    // Registrasi berhasil
+    return true;
+  } else {
+    // Registrasi gagal
+    return false;
   }
+}
+
 }

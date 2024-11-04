@@ -1,7 +1,11 @@
+import 'package:active_core/api/auth_services.dart';
 import 'package:active_core/widget/pwfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:active_core/features/authentication/AuthCoach/login.dart';
+import 'package:logger/logger.dart';
+
+
 
 class RegisterScreenCoach extends StatefulWidget {
   final String role;
@@ -13,13 +17,15 @@ class RegisterScreenCoach extends StatefulWidget {
 }
 
 class RegisterScreenCoachState extends State<RegisterScreenCoach> {
+  final Logger logger = Logger();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+  
 
-  void register() {
+void register() async {
     // Validasi input
     String name = nameController.text.trim();
     String email = emailController.text.trim();
@@ -27,8 +33,15 @@ class RegisterScreenCoachState extends State<RegisterScreenCoach> {
     String password = passwordController.text.trim();
     String confirmPassword = confirmPasswordController.text.trim();
 
+    // Log input values
+    logger.d('Name: $name');
+    logger.d('Email: $email');
+    logger.d('Phone: $phone');
+    logger.d('Password: $password');
+    logger.d('Confirm Password: $confirmPassword');
+
     if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      // Tampilkan snackbar atau dialog untuk menunjukkan kesalahan
+      // Tampilkan snackbar atau dialog untuk menunjukkan kesalahanf
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields.')),
       );
@@ -41,7 +54,36 @@ class RegisterScreenCoachState extends State<RegisterScreenCoach> {
       );
       return;
     }
+
+    // Panggil fungsi register dari AuthService
+    AuthService authService = AuthService(); // Inisialisasi AuthService
+    bool registrationSuccess = await authService.register(
+      name,
+      email,
+      phone,
+      confirmPassword, 
+      password,        
+      widget.role,     
+    );
+
+    // Tangani hasil registrasi
+    if (!mounted) return; // Periksa apakah widget masih terpasang
+
+    if (registrationSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registration successful!')),
+      );
+      // Navigasi ke halaman lain jika perlu
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreenCoach()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registration failed. Please try again.')),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -158,13 +200,13 @@ class RegisterScreenCoachState extends State<RegisterScreenCoach> {
                           label: 'Password', controller: passwordController),
                       const SizedBox(height: 14),
                       PasswordField(
-                          label: 'Password', controller: confirmPasswordController),
+                          label: 'Confirm Password', controller: confirmPasswordController),
 
                       const SizedBox(height: 35),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: register, // Ganti dengan fungsi register
+                          onPressed: register,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF697684),
                             padding: const EdgeInsets.symmetric(vertical: 16.0),

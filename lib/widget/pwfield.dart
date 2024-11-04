@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
 class PasswordField extends StatefulWidget {
-  final String label; // New parameter for the label text
+  final String label; // Parameter untuk teks label
+  final TextEditingController controller; // Menyimpan controller
 
-  const PasswordField({super.key, required this.label, required TextEditingController controller});
+  const PasswordField({
+    super.key,
+    required this.label,
+    required this.controller, // Simpan controller
+  });
 
   @override
   PasswordFieldState createState() => PasswordFieldState();
@@ -18,14 +23,15 @@ class PasswordFieldState extends State<PasswordField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.label, // Use the label passed to the widget
+          widget.label, // Menggunakan label yang diteruskan ke widget
           style: const TextStyle(
-            color: Color(0xFF697684), // Warna tautan
+            color: Color(0xFF697684), // Warna label
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 8), // Jarak antara Text dan TextField
         TextField(
+          controller: widget.controller, // Gunakan controller yang disimpan
           obscureText: _isObscured, // Menggunakan status visibilitas
           decoration: InputDecoration(
             border: const OutlineInputBorder(),
