@@ -1,7 +1,9 @@
+import 'package:active_core/api/auth_services.dart';
 import 'package:active_core/widget/pwfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:active_core/features/authentication/AuthMember/login.dart';
+import 'package:logger/logger.dart';
 
 class RegisterScreenMember extends StatefulWidget {
   final String role;
@@ -13,54 +15,73 @@ class RegisterScreenMember extends StatefulWidget {
 }
 
 class RegisterScreenMemberState extends State<RegisterScreenMember> {
+  final Logger logger = Logger();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+  
 
-  void register(BuildContext context) {
+void register() async {
     // Validasi input
     String name = nameController.text.trim();
     String email = emailController.text.trim();
-    String phoneNumber = phoneController.text.trim();
+    String phone = phoneController.text.trim();
     String password = passwordController.text.trim();
-    String passwordconfirmation = confirmPasswordController.text.trim();
+    String confirmPassword = confirmPasswordController.text.trim();
 
-    if (name.isEmpty ||
-        email.isEmpty ||
-        phoneNumber.isEmpty ||
-        password.isEmpty ||
-        passwordconfirmation.isEmpty) {
-      // Tampilkan snackbar atau dialog untuk menunjukkan kesalahan
+    // Log input values
+    logger.d('Name: $name');
+    logger.d('Email: $email');
+    logger.d('Phone: $phone');
+    logger.d('Password: $password');
+    logger.d('Confirm Password: $confirmPassword');
+
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      // Tampilkan snackbar atau dialog untuk menunjukkan kesalahanf
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all fields.')),
       );
       return;
     }
 
-    if (password != passwordconfirmation) {
+    if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Passwords do not match.')),
       );
       return;
     }
 
-    // Tambahkan logika untuk menyimpan data pengguna ke database di sini
-    // Jika registrasi berhasil, arahkan ke halaman login
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Registration successful!')),
+    // Panggil fungsi register dari AuthService
+    AuthService authService = AuthService(); // Inisialisasi AuthService
+    bool registrationSuccess = await authService.register(
+      name,
+      email,
+      phone,
+      confirmPassword, 
+      password,        
+      widget.role,     
     );
 
-    // Arahkan pengguna kembali ke halaman login
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const LoginScreenMember(),
-      ),
-    );
+    // Tangani hasil registrasi
+    if (!mounted) return; // Periksa apakah widget masih terpasang
+
+    if (registrationSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registration successful!')),
+      );
+      // Navigasi ke halaman lain jika perlu
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreenMember()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registration failed. Please try again.')),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +90,8 @@ class RegisterScreenMemberState extends State<RegisterScreenMember> {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF697684), // Warna atas
-              Colors.white, // Warna bawah
+              Color(0xFF697684),
+              Colors.white,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -85,20 +106,19 @@ class RegisterScreenMemberState extends State<RegisterScreenMember> {
               children: [
                 Image.asset(
                   'assets/images/ActiveCore_icon.png',
-                  width: 100, // Sesuaikan ukuran logo
-                  height: 100, // Sesuaikan ukuran logo
+                  width: 100,
+                  height: 100,
                 ),
-                const SizedBox(height: 10), // Jarak antara logo dan teks
-                // Judul
+                const SizedBox(height: 10),
                 Text(
-                  'Register as ${widget.role}', // Menampilkan role yang dipilih
+                  'Register as ${widget.role}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8), // Jarak antara judul dan subjudul
+                const SizedBox(height: 8),
                 const Text(
                   'Create your account',
                   style: TextStyle(
@@ -106,21 +126,18 @@ class RegisterScreenMemberState extends State<RegisterScreenMember> {
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 40), // Jarak sebelum form
-                // Form
+                const SizedBox(height: 40),
                 Container(
                   height: 620,
                   decoration: BoxDecoration(
-                    color: Colors.white, // Warna latar belakang form
-                    borderRadius:
-                        BorderRadius.circular(8.0), // Sudut melengkung
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black
-                            .withOpacity(0.2), // Mengatur warna bayangan
-                        offset: const Offset(0, 4), // Posisi bayangan
-                        blurRadius: 8, // Seberapa kabur bayangan
-                        spreadRadius: 4, // Seberapa jauh bayangan menyebar
+                        color: Colors.black.withOpacity(0.2),
+                        offset: const Offset(0, 4),
+                        blurRadius: 8,
+                        spreadRadius: 4,
                       ),
                     ],
                   ),
@@ -181,15 +198,13 @@ class RegisterScreenMemberState extends State<RegisterScreenMember> {
                           label: 'Password', controller: passwordController),
                       const SizedBox(height: 14),
                       PasswordField(
-                          label: 'Confirm Password',
-                          controller: confirmPasswordController),
+                          label: 'Confirm Password', controller: confirmPasswordController),
+
                       const SizedBox(height: 35),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            register(context); // Panggil fungsi register dengan konteks
-                          },
+                          onPressed: register,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF697684),
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
