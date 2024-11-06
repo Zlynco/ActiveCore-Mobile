@@ -1,7 +1,9 @@
-import 'package:active_core/screen/coach/booking_screen_member.dart';
-import 'package:active_core/screen/coach/class_screen_member.dart';
+import 'package:active_core/api/coach_service.dart';
+import 'package:active_core/models/getclass.dart';
+import 'package:active_core/screen/coach/booking_screen_coach.dart';
+import 'package:active_core/screen/coach/class_screen_coach.dart';
 import 'package:active_core/screen/coach/detail_class_coach.dart';
-import 'package:active_core/screen/coach/profile_screen_member.dart';
+import 'package:active_core/screen/coach/profile_screen_coach.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
@@ -96,21 +98,48 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
   final Logger logger = Logger();
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
-  final Map<DateTime, List<String>> _events = {
-    DateTime(2024, 11, 05): [
-      'Karate at 08:00 - 10:00',
-      'Karate at 16:00 - 18:00',
-      'Boxing at 19:00 - 21:00'
-    ],
-    DateTime(2024, 11, 18): ['Boxing at 17:00 - 20:00'],
-    DateTime(2024, 11, 20): ['Karate at 16:00 - 18:00'],
-  };
+  Map<DateTime, List<Event>> _events = {};
 
-  List<String> _getEventsForDay(DateTime day) {
-    final normalizedDay = DateTime(day.year, day.month, day.day);
-    final eventsForDay = _events[normalizedDay] ?? [];
-    logger.d('Events for $normalizedDay: $eventsForDay');
-    return eventsForDay;
+  // Fetch events when the widget is initialized
+  @override
+  void initState() {
+    super.initState();
+    _fetchEvents();
+  }
+
+  // Function to fetch events from the API
+  Future<void> _fetchEvents() async {
+    final classService = CoachService();
+    List? events = await classService.getClasses();
+    logger.d("Events from API: $events");
+
+    if (events != null) {
+      Map<DateTime, List<Event>> eventsMap = {};
+
+      for (var eventJson in events) {
+        logger.d("Event data: $eventJson");
+
+        Event event = Event.fromJson(eventJson);
+
+        DateTime eventDate = event.date;
+
+        if (!eventsMap.containsKey(eventDate)) {
+          eventsMap[eventDate] = [];
+        }
+        eventsMap[eventDate]?.add(event);
+      }
+
+      setState(() {
+        _events = eventsMap; // Update the state with the events map
+      });
+    }
+  }
+
+  List<Event> _getEventsForDay(DateTime day) {
+    final normalizedDay =
+        DateTime(day.year, day.month, day.day); // Normalisasi hari
+    return _events[normalizedDay] ??
+        []; // Mengembalikan list event berdasarkan hari
   }
 
   @override
@@ -120,7 +149,6 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
     final formattedDate = dateFormatter.format(now);
 
     return SingleChildScrollView(
-      // Tambahkan SingleChildScrollView di sini
       child: Padding(
         padding:
             const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
@@ -156,13 +184,26 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
                 focusedDay: _focusedDay,
                 selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                 onDaySelected: (selectedDay, focusedDay) {
-                  logger.d('Selected day: $selectedDay');
+                  final normalizedSelectedDay = DateTime(
+                      selectedDay.year, selectedDay.month, selectedDay.day);
+
+                  logger.d('Selected day: $normalizedSelectedDay');
                   setState(() {
-                    _selectedDay = selectedDay;
+                    _selectedDay = normalizedSelectedDay;
                     _focusedDay = focusedDay;
                   });
+                  List<Event> eventsForSelectedDay =
+                      _events[normalizedSelectedDay] ?? [];
+                  final eventNames =
+                      eventsForSelectedDay.map((event) => event.name).toList();
+                  logger.d('Events on selected day: $eventNames');
                 },
-                eventLoader: _getEventsForDay,
+                eventLoader: (day) {
+                  // Memuat acara untuk hari yang dipilih
+                  return _getEventsForDay(day)
+                      .map((e) => e.name)
+                      .toList(); // Mengambil nama acara
+                },
                 calendarStyle: CalendarStyle(
                   todayDecoration: const BoxDecoration(
                     color: Colors.orangeAccent,
@@ -215,22 +256,20 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
               ),
             ),
             const SizedBox(height: 8),
-
-// Menampilkan event pada hari yang dipilih
+            // Menampilkan acara untuk hari yang dipilih
             ..._getEventsForDay(_selectedDay).map((event) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: InkWell(
-                    // Mengubah Container menjadi InkWell
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DetailClassCoach(
-                                className:
-                                    event)), // Ganti dengan constructor yang sesuai
+                          builder: (context) => DetailClassCoach(
+                              className: event
+                                  .name), // Pass event name or other details
+                        ),
                       );
                     },
-
                     child: Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
@@ -260,12 +299,13 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  event,
+                                  '${event.name} at ${TimeOfDay.fromDateTime(event.startTime).format(context)} - ${TimeOfDay.fromDateTime(event.endTime).format(context)}',
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: Colors.white),
-                                ),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                )
                               ],
                             ),
                           ),
