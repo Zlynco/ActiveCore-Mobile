@@ -2,7 +2,7 @@ import 'package:active_core/api/coach_service.dart';
 import 'package:active_core/models/getclass.dart';
 import 'package:active_core/screen/coach/booking_screen_coach.dart';
 import 'package:active_core/screen/coach/class_screen_coach.dart';
-import 'package:active_core/screen/coach/detail_class_coach.dart';
+import 'package:active_core/screen/coach/detail/detail_class_coach1.dart';
 import 'package:active_core/screen/coach/profile_screen_coach.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -121,7 +121,7 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
 
         Event event = Event.fromJson(eventJson);
 
-        DateTime eventDate = event.date;
+        DateTime eventDate = DateTime(event.date.year, event.date.month, event.date.day);  // Normalisasi tanggal
 
         if (!eventsMap.containsKey(eventDate)) {
           eventsMap[eventDate] = [];
@@ -136,10 +136,8 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
   }
 
   List<Event> _getEventsForDay(DateTime day) {
-    final normalizedDay =
-        DateTime(day.year, day.month, day.day); // Normalisasi hari
-    return _events[normalizedDay] ??
-        []; // Mengembalikan list event berdasarkan hari
+    final normalizedDay = DateTime(day.year, day.month, day.day); // Normalisasi hari
+    return _events[normalizedDay] ?? []; // Mengembalikan list event berdasarkan hari
   }
 
   @override
@@ -150,8 +148,7 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
 
     return SingleChildScrollView(
       child: Padding(
-        padding:
-            const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
+        padding: const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -199,10 +196,9 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
                   logger.d('Events on selected day: $eventNames');
                 },
                 eventLoader: (day) {
-                  // Memuat acara untuk hari yang dipilih
                   return _getEventsForDay(day)
                       .map((e) => e.name)
-                      .toList(); // Mengambil nama acara
+                      .toList();
                 },
                 calendarStyle: CalendarStyle(
                   todayDecoration: const BoxDecoration(
@@ -264,9 +260,10 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DetailClassCoach(
-                              className: event
-                                  .name), // Pass event name or other details
+                          builder: (context) => DetailClassCoach2(
+                            event: event,  
+                            classImageUrl: '', 
+                          ),
                         ),
                       );
                     },

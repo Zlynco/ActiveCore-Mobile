@@ -2,6 +2,8 @@ import 'package:active_core/screen/member/booking_screen_member.dart';
 import 'package:active_core/screen/member/class_screen_member.dart';
 import 'package:active_core/screen/member/profile_screen_member.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 
 class HomeScreenMember extends StatefulWidget {
   const HomeScreenMember({super.key});
@@ -24,10 +26,6 @@ class HomeScreenMemberState extends State<HomeScreenMember> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ActiveCore'),
-        centerTitle: true,
-      ),
       body: _pages[_currentIndex], // Menampilkan halaman berdasarkan index
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -54,17 +52,17 @@ class HomeScreenMemberState extends State<HomeScreenMember> {
             icon: _buildNavItem(Icons.calendar_today, 2),
             label: 'Booking',
           ),
-              BottomNavigationBarItem(
-      icon: _buildNavItem(Icons.person, 3),
-      label: 'Profile',
-    ),
+          BottomNavigationBarItem(
+            icon: _buildNavItem(Icons.person, 3),
+            label: 'Profile',
+          ),
         ],
       ),
     );
   }
 
   // Widget khusus untuk menambahkan garis di atas ikon yang aktif
- Widget _buildNavItem(IconData icon, int index) {
+  Widget _buildNavItem(IconData icon, int index) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -90,8 +88,270 @@ class HomeScreenMemberContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Welcome to the Member Home Page!'),
+    // Mendapatkan tanggal saat ini
+    final now = DateTime.now();
+    final dateFormatter = DateFormat('EEEE, d MMMM, y');
+    final formattedDate = dateFormatter.format(now);
+    final logger = Logger();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Judul
+            const Text(
+              'Hello, member',
+              style: TextStyle(
+                color: Color(0xFF697684),
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Menampilkan tanggal
+            Text(
+              formattedDate,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF697684),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Kalender
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                color: const Color(0xFF697684),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Text(
+                  'NONE',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Reminder
+            const Text(
+              'Reminder',
+              style: TextStyle(
+                color: Color(0xFF697684),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text(
+              'Your Booked Classes',
+              style: TextStyle(
+                fontSize: 16,
+                color: Color(0xFF697684),
+              ),
+            ),
+            const SizedBox(height: 4),
+            // Button persegi panjang
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              margin: const EdgeInsets.only(top: 8.0),
+              decoration: BoxDecoration(
+                color: const Color(0xFF697684),
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Classes',
+                          style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 12,
+                              color: Colors.white),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Karate',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.white),
+                        ),
+                        Text(
+                          'Coach Leonard',
+                          style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 12,
+                              color: Colors.white),
+                        ),
+                        Text('Wednesday, 16 October, 2024',
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 12,
+                                color: Colors.white)),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_outlined,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Popular Class Categories Title
+            const Text(
+              'Popular Class Categories',
+              style: TextStyle(
+                color: Color(0xFF697684),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Wrap untuk kartu fleksibel
+            Wrap(
+              spacing: 12.0, // Jarak antar kartu horizontal
+              runSpacing: 16.0, // Jarak antar baris kartu
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    logger.d('Karate Card tapped!');
+                  },
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Column(
+                      children: [
+                        SizedBox(
+                          height: 120,
+                          width: 150,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.grey, // Placeholder warna abu-abu
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            'Karate',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF697684),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    logger.d('Zumba Card tapped!');
+                  },
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Column(
+                      children: [
+                        SizedBox(
+                          height: 120,
+                          width: 150,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.blue, // Placeholder warna biru
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            'Zumba',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF697684),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    logger.d('Yoga Card tapped!');
+                  },
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Column(
+                      children: [
+                        SizedBox(
+                          height: 120,
+                          width: 150,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.green, // Placeholder warna hijau
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            'Yoga',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF697684),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                // Tambahkan lebih banyak kartu sesuai kebutuhan
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

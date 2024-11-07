@@ -1,6 +1,6 @@
 import 'package:active_core/api/coach_service.dart';
-import 'package:active_core/models/coachclasses.dart';
-import 'package:active_core/screen/coach/detail_class_coach.dart';
+import 'package:active_core/models/getclass.dart';
+import 'package:active_core/screen/coach/detail/detail_class_coach.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
@@ -18,29 +18,34 @@ class ClassScreenCoachState extends State<ClassScreenCoach> {
   @override
   void initState() {
     super.initState();
-    futureClasses = fetchClasses(); // Ambil data kelas saat layar pertama kali dibuka
+    futureClasses =
+        fetchClasses(); // Ambil data kelas saat layar pertama kali dibuka
   }
 
-  // Fungsi untuk mengambil data kelas
   Future<List<ClassModel>> fetchClasses() async {
-    final classService = CoachService();
-    try {
-      final classes = await classService.getClasses();
+  final classService = CoachService(); // Pastikan CoachService diimpor dan didefinisikan dengan benar
+  try {
+    final classes = await classService.getClasses();
 
-      if (classes != null) {
-        logger.i('Data kelas berhasil diambil.');
-        return classes
-            .map((classData) => ClassModel.fromJson(classData))
-            .toList();
-      } else {
-        logger.w('Tidak ada kelas yang tersedia.');
-        throw Exception('Tidak ada data kelas');
-      }
-    } catch (e) {
-      logger.e('Terjadi kesalahan saat mengambil kelas: $e');
-      throw Exception('Gagal mengambil kelas');
+    // Pastikan classes tidak null dan memiliki data
+    if (classes != null && classes.isNotEmpty) {
+      logger.i('Data kelas berhasil diambil.');
+
+      // Mengonversi data JSON ke model ClassModel
+      return classes
+          .map((classData) => ClassModel.fromJson(classData))
+          .toList();
+    } else {
+      logger.w('Tidak ada kelas yang tersedia.');
+      throw Exception('Tidak ada data kelas');
     }
+  } catch (e) {
+    logger.e('Terjadi kesalahan saat mengambil kelas: $e');
+    // Mengembalikan Exception untuk kesalahan jaringan atau parsing
+    throw Exception('Gagal mengambil kelas');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -83,8 +88,7 @@ class ClassScreenCoachState extends State<ClassScreenCoach> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => DetailClassCoach(
-                                    className: content.name,
-                                  ),
+                                      classModel: content, classImageUrl: '',),
                                 ),
                               );
                             },

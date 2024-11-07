@@ -22,7 +22,7 @@ class ProfileScreenCoach extends StatelessWidget {
             const SizedBox(height: 16), // Spasi di bawah judul
             GestureDetector(
               onTap: () {
-               
+                // Tambahkan fungsi untuk tap pada profile
               },
               child: Container(
                 padding: const EdgeInsets.all(16.0),
@@ -78,6 +78,112 @@ class ProfileScreenCoach extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+            ),
+            const SizedBox(height: 24), 
+            ElevatedButton(
+              onPressed: () {
+                // Navigasi atau aksi untuk Booking History
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF697684), 
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.history,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 16),
+                      Text(
+                        'Booking History',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_outlined, // Ikon panah
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 50),
+            
+            ElevatedButton(
+              onPressed: () {
+                // Navigasi atau aksi untuk Booking History
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF697684), 
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 16),
+                      Text(
+                        'Delete',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_outlined, // Ikon panah
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16), // Spasi antara tombol
+            ElevatedButton(
+              onPressed: () {
+                // Navigasi atau aksi untuk Booking History
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF697684), 
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.exit_to_app,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 16),
+                      Text(
+                        'Logout Account',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios_outlined, // Ikon panah
+                    color: Colors.white,
+                  ),
+                ],
               ),
             ),
           ],
