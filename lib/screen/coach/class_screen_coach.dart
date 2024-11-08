@@ -1,6 +1,6 @@
 import 'package:active_core/api/coach_service.dart';
 import 'package:active_core/models/getclass.dart';
-import 'package:active_core/screen/coach/detail/detail_class_coach.dart';
+import 'package:active_core/screen/coach/detail/detail_class_coach1.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
@@ -12,7 +12,7 @@ class ClassScreenCoach extends StatefulWidget {
 }
 
 class ClassScreenCoachState extends State<ClassScreenCoach> {
-  late Future<List<ClassModel>> futureClasses;
+  late Future<List<Event>> futureClasses;
   final Logger logger = Logger();
 
   @override
@@ -22,7 +22,7 @@ class ClassScreenCoachState extends State<ClassScreenCoach> {
         fetchClasses(); // Ambil data kelas saat layar pertama kali dibuka
   }
 
-  Future<List<ClassModel>> fetchClasses() async {
+  Future<List<Event>> fetchClasses() async {
   final classService = CoachService(); // Pastikan CoachService diimpor dan didefinisikan dengan benar
   try {
     final classes = await classService.getClasses();
@@ -31,9 +31,9 @@ class ClassScreenCoachState extends State<ClassScreenCoach> {
     if (classes != null && classes.isNotEmpty) {
       logger.i('Data kelas berhasil diambil.');
 
-      // Mengonversi data JSON ke model ClassModel
+      // Mengonversi data JSON ke model Event
       return classes
-          .map((classData) => ClassModel.fromJson(classData))
+          .map((classData) => Event.fromJson(classData))
           .toList();
     } else {
       logger.w('Tidak ada kelas yang tersedia.');
@@ -65,7 +65,7 @@ class ClassScreenCoachState extends State<ClassScreenCoach> {
             ),
             const SizedBox(height: 2), // Spacing under the title
             Expanded(
-              child: FutureBuilder<List<ClassModel>>(
+              child: FutureBuilder<List<Event>>(
                 future: futureClasses,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -88,7 +88,7 @@ class ClassScreenCoachState extends State<ClassScreenCoach> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => DetailClassCoach(
-                                      classModel: content, classImageUrl: '',),
+                                      event: content, classImageUrl: '',),
                                 ),
                               );
                             },

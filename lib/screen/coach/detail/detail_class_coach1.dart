@@ -3,12 +3,12 @@ import 'package:active_core/models/getclass.dart';
 import 'package:logger/logger.dart';
 import 'package:intl/intl.dart';
 
-class DetailClassCoach2 extends StatelessWidget {
+class DetailClassCoach extends StatelessWidget {
   final Event event;
   final String classImageUrl;
   final logger = Logger();
 
-  DetailClassCoach2({
+  DetailClassCoach({
     super.key,
     required this.classImageUrl,
     required this.event,

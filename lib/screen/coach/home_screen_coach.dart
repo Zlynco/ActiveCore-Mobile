@@ -260,7 +260,7 @@ class HomeScreenCoachContentState extends State<HomeScreenCoachContent> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DetailClassCoach2(
+                          builder: (context) => DetailClassCoach(
                             event: event,  
                             classImageUrl: '', 
                           ),
