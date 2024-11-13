@@ -1,3 +1,4 @@
+import 'package:active_core/features/authentication/role.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreenCoach extends StatelessWidget {
@@ -53,7 +54,7 @@ class ProfileScreenCoach extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Coach Name', // Ganti dengan nama sebenarnya
+                            'Member Name', // Ganti dengan nama sebenarnya
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -81,113 +82,78 @@ class ProfileScreenCoach extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24), 
-            ElevatedButton(
+            // Tombol Booking History
+            buildProfileButton(
+              icon: Icons.history,
+              label: 'Booking History',
               onPressed: () {
-                // Navigasi atau aksi untuk Booking History
+                // Tambahkan navigasi atau fungsi untuk Booking History
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF697684), 
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.history,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 16),
-                      Text(
-                        'Booking History',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios_outlined, // Ikon panah
-                    color: Colors.white,
-                  ),
-                ],
-              ),
             ),
-            const SizedBox(height: 50),
-            
-            ElevatedButton(
+            const SizedBox(height: 42), // Spasi antara tombol
+            // Tombol Delete
+            buildProfileButton(
+              icon: Icons.delete,
+              label: 'Delete',
               onPressed: () {
-                // Navigasi atau aksi untuk Booking History
+                // Tambahkan aksi untuk Delete
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF697684), 
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 16),
-                      Text(
-                        'Delete',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios_outlined, // Ikon panah
-                    color: Colors.white,
-                  ),
-                ],
-              ),
             ),
             const SizedBox(height: 16), // Spasi antara tombol
-            ElevatedButton(
+            // Tombol Logout Account
+            buildProfileButton(
+              icon: Icons.exit_to_app,
+              label: 'Logout Account',
               onPressed: () {
-                // Navigasi atau aksi untuk Booking History
+                 Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const SelectRole()),
+              (Route<dynamic> route) => false,
+            );
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF697684), 
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.exit_to_app,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 16),
-                      Text(
-                        'Logout Account',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios_outlined, // Ikon panah
-                    color: Colors.white,
-                  ),
-                ],
-              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Fungsi untuk membangun tombol profil
+  Widget buildProfileButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF697684),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                color: Colors.white,
+              ),
+              const SizedBox(width: 16),
+              Text(
+                label,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+          const Icon(
+            Icons.arrow_forward_ios_outlined, // Ikon panah
+            color: Colors.white,
+          ),
+        ],
       ),
     );
   }

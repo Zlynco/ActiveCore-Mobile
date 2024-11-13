@@ -196,7 +196,7 @@ class _BookingScreenMemberState extends State<BookingScreenMember> {
                         child: Center(
                           child: Text(
                             _startTime != null
-                                ? "Start: ${_startTime!.format(context)}"
+                                ? " ${_startTime!.format(context)}"
                                 : "Select Start Time",
                             style: const TextStyle(
                                 fontSize: 16,
@@ -227,7 +227,7 @@ class _BookingScreenMemberState extends State<BookingScreenMember> {
                         child: Center(
                           child: Text(
                             _endTime != null
-                                ? "End: ${_endTime!.format(context)}"
+                                ? " ${_endTime!.format(context)}"
                                 : "Select End Time",
                             style: const TextStyle(
                                 fontSize: 16,

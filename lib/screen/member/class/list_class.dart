@@ -1,12 +1,32 @@
+import 'package:active_core/api/member_service.dart';
+import 'package:active_core/screen/member/class/booking_class_detail.dart';
 import 'package:flutter/material.dart';
-//import 'package:logger/logger.dart';
+import 'package:active_core/models/classes.dart';
+import 'package:intl/intl.dart';
 
 class ListClassMember extends StatelessWidget {
-  const ListClassMember({super.key});
+  final String category;
+
+  const ListClassMember({super.key, required this.category});
+
+  // Menggunakan service untuk mendapatkan daftar kelas
+  Future<List<Classes>> _fetchClasses(String category) async {
+    final classService = ClassService();
+    // Fetch the full list of classes
+    List<Classes> allClasses = await classService.fetchClasses();
+
+    // If a category is selected, filter the classes by category
+    if (category.isNotEmpty) {
+      return allClasses
+          .where((classItem) => classItem.category == category)
+          .toList();
+    } else {
+      return allClasses; // Return all classes if no category is selected
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    //final logger = Logger();
     return Scaffold(
       body: Padding(
         padding:
@@ -14,9 +34,9 @@ class ListClassMember extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'All Karate Class',
-              style: TextStyle(
+            Text(
+              category.isNotEmpty ? 'All $category Class' : 'All Classes',
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -76,63 +96,115 @@ class ListClassMember extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              margin: const EdgeInsets.only(top: 8.0),
-              decoration: BoxDecoration(
-                color: const Color(0xFF697684),
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+            const SizedBox(height: 8),
+            Expanded(
+              child: FutureBuilder<List<Classes>>(
+                future: _fetchClasses(
+                    category), // Pass category to fetch filtered classes
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No classes available.'));
+                  } else {
+                    final classes = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: classes.length,
+                      itemBuilder: (context, index) {
+                        final classItem = classes[index];
+                        return Container(
+                          padding: const EdgeInsets.all(16.0),
+                          margin: const EdgeInsets.only(top: 8.0),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF697684),
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ClassBookingScreenDetail(),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        classItem.name,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Coached By ${classItem.coach}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Text(
+                                        DateFormat('d MMMM yyyy').format(classItem
+                                            .date), // Format ke "14 November 2024"
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Text(
+                                        'At ${classItem.startTime.hour}:${classItem.startTime.minute} - ${classItem.endTime.hour}:${classItem.endTime.minute}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Quota: ${classItem.quota - classItem.registeredCount} slots available',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios_outlined,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Karate',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.white),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Coached by Leonard',
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 12,
-                              color: Colors.white),
-                        ),
-                        Text('Wednesday, 16 October, 2024',
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 12,
-                                color: Colors.white)),
-                        Text('at 17:00 - 19:00',
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 12,
-                                color: Colors.white)),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.arrow_forward_ios_outlined,
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-            ),
+            )
           ],
         ),
       ),
