@@ -10,18 +10,27 @@ class ListClassMember extends StatelessWidget {
   const ListClassMember({super.key, required this.category});
 
   // Menggunakan service untuk mendapatkan daftar kelas
-  Future<List<Classes>> _fetchClasses(String category) async {
+ Future<List<Classes>> _fetchClasses(String category) async {
     final classService = ClassService();
     // Fetch the full list of classes
     List<Classes> allClasses = await classService.fetchClasses();
 
-    // If a category is selected, filter the classes by category
+    // Mengambil tanggal hari ini dan satu bulan ke depan
+    DateTime today = DateTime.now();
+    DateTime oneMonthLater = today.add(const Duration(days: 30));
+
+    // Filter kelas yang tanggalnya antara hari ini dan satu bulan ke depan
+    List<Classes> filteredClasses = allClasses.where((classItem) {
+      return classItem.date.isAfter(today) && classItem.date.isBefore(oneMonthLater);
+    }).toList();
+
+    // Jika ada kategori yang dipilih, filter lagi berdasarkan kategori
     if (category.isNotEmpty) {
-      return allClasses
+      return filteredClasses
           .where((classItem) => classItem.category == category)
           .toList();
     } else {
-      return allClasses; // Return all classes if no category is selected
+      return filteredClasses; // Return kelas yang sudah difilter
     }
   }
 
@@ -29,8 +38,7 @@ class ListClassMember extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding:
-            const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
+        padding: const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -99,8 +107,7 @@ class ListClassMember extends StatelessWidget {
             const SizedBox(height: 8),
             Expanded(
               child: FutureBuilder<List<Classes>>(
-                future: _fetchClasses(
-                    category), // Pass category to fetch filtered classes
+                future: _fetchClasses(category), // Pass category to fetch filtered classes
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -130,11 +137,14 @@ class ListClassMember extends StatelessWidget {
                           ),
                           child: GestureDetector(
                             onTap: () {
+                              // Mengirim data kelas dan kategori ke halaman detail
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ClassBookingScreenDetail(),
+                                  builder: (context) => ClassBookingScreenDetail(
+                                    classItem: classItem,
+                                    category: category, // Kirim kategori
+                                  ),
                                 ),
                               );
                             },
@@ -164,8 +174,7 @@ class ListClassMember extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        DateFormat('d MMMM yyyy').format(classItem
-                                            .date), // Format ke "14 November 2024"
+                                        DateFormat('d MMMM yyyy').format(classItem.date), // Format ke "14 November 2024"
                                         style: const TextStyle(
                                           fontWeight: FontWeight.normal,
                                           fontSize: 12,

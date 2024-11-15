@@ -1,4 +1,6 @@
+import 'package:active_core/api/member_service.dart';
 import 'package:active_core/screen/member/booking_screen_member.dart';
+import 'package:active_core/screen/member/class/list_class.dart';
 import 'package:active_core/screen/member/class_screen_member.dart';
 import 'package:active_core/screen/member/profile_screen_member.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +95,7 @@ class HomeScreenMemberContent extends StatelessWidget {
     final dateFormatter = DateFormat('EEEE, d MMMM, y');
     final formattedDate = dateFormatter.format(now);
     final logger = Logger();
+    final classService = ClassService();
 
     return Padding(
       padding: const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
@@ -100,7 +103,7 @@ class HomeScreenMemberContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Judul
+            // Judul dan tanggal
             const Text(
               'Hello, member',
               style: TextStyle(
@@ -110,7 +113,6 @@ class HomeScreenMemberContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            // Menampilkan tanggal
             Text(
               formattedDate,
               style: const TextStyle(
@@ -119,6 +121,7 @@ class HomeScreenMemberContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+
             // Kalender
             Container(
               height: 200,
@@ -134,6 +137,7 @@ class HomeScreenMemberContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+
             // Reminder
             const Text(
               'Reminder',
@@ -151,6 +155,7 @@ class HomeScreenMemberContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
+
             // Button persegi panjang
             Container(
               padding: const EdgeInsets.all(16.0),
@@ -211,6 +216,7 @@ class HomeScreenMemberContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+
             // Popular Class Categories Title
             const Text(
               'Popular Class Categories',
@@ -221,56 +227,106 @@ class HomeScreenMemberContent extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            // Wrap untuk kartu fleksibel
-            Wrap(
-              spacing: 12.0, // Jarak antar kartu horizontal
-              runSpacing: 16.0, // Jarak antar baris kartu
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    logger.d('Karate Card tapped!');
-                  },
-                  child: Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Column(
-                      children: [
-                        SizedBox(
-                          height: 120,
-                          width: 150,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: Colors.grey, // Placeholder warna abu-abu
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(8),
-                                topRight: Radius.circular(8),
-                              ),
+
+            // FutureBuilder untuk Popular Class Categories
+            FutureBuilder<List<dynamic>>(
+              future: classService.fetchPopularCategory(
+                  now.month), // Menggunakan bulan saat ini
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text(
+                    'Error: ${snapshot.error}',
+                    style: const TextStyle(color: Colors.red),
+                  );
+                } else if (snapshot.hasData) {
+                  final categories = snapshot.data!;
+                  return Wrap(
+                    spacing: 12.0, // Jarak antar kartu horizontal
+                    runSpacing: 16.0, // Jarak antar baris kartu
+                    children: categories.map((category) {
+                      final name =
+                          category['name']; // Pastikan nama field benar
+                      final imageUrl = _getCategoryImage(
+                          name); // Menentukan gambar sesuai kategori
+
+                      return GestureDetector(
+                        onTap: () {
+                          logger.d('$category Card tapped!');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ListClassMember(category: name),
                             ),
+                          );
+                        },
+                        child: Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 120,
+                                width: 150,
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(8),
+                                    topRight: Radius.circular(8),
+                                  ),
+                                  child: Image.asset(
+                                    imageUrl,
+                                    fit: BoxFit
+                                        .cover, // Menyesuaikan gambar agar sesuai ukuran
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Text(
+                                  name,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF697684),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        SizedBox(height: 8),
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 8.0),
-                          child: Text(
-                            'Karate',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF697684),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                      );
+                    }).toList(),
+                  );
+                } else {
+                  return const Text('No popular categories found.');
+                }
+              },
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+String _getCategoryImage(String category) {
+  switch (category.toLowerCase()) {
+    case 'boxing':
+      return 'assets/images/boxing.jpg';
+    case 'karate':
+      return 'assets/images/karate.jpg';
+    case 'yoga':
+      return 'assets/images/yoga.jpg';
+    case 'zumba':
+      return 'assets/images/zumba.jpg';
+    case 'muay thai':
+      return 'assets/images/muaythai.jpg';
+    default:
+      return ''; // Gambar default jika kategori tidak ditemukan
   }
 }

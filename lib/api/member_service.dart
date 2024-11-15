@@ -22,7 +22,24 @@ class ClassService {
       throw Exception('Error fetching classes: $e');
     }
   }
+  //get popular category
+  Future<List<dynamic>> fetchPopularCategory(int month) async {
+  try {
+    // Kirim permintaan GET ke API dengan query parameter `month`
+    final response = await http.get(Uri.parse('$baseUrl/popularcategory?month=$month'));
 
+
+    if (response.statusCode == 200) {
+      // Parsing data JSON
+      final data = json.decode(response.body);
+      return data; // Mengembalikan daftar category populer
+    } else {
+      throw Exception('Failed to load popular category');
+    }
+  } catch (e) {
+    throw Exception('Error: $e');
+  }
+}
   /// Get a single class by ID
   // Future<Classes> fetchClassById(int id) async {
   //   try {

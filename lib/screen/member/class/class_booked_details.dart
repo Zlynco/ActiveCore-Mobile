@@ -1,20 +1,23 @@
+import 'package:active_core/models/classes.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ClassBookedScreenDetail extends StatelessWidget {
-  const ClassBookedScreenDetail({super.key});
+  final Classes classItem;
+  const ClassBookedScreenDetail({super.key, required this.classItem});
 
   @override
   Widget build(BuildContext context) {
     
     // Format tanggal dengan intl
-    DateTime classDate = DateTime(2024, 10, 16); // Misalnya tanggal kelas
-    String formattedDate = DateFormat('EEEE, d MMMM yyyy').format(classDate);
+String formattedDate =
+        DateFormat('EEEE, d MMMM yyyy').format(classItem.date);
+     final imageUrl = _getCategoryImage(classItem.category);
 
     return Scaffold(
       body: SingleChildScrollView(
         padding:
-            const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
+            const EdgeInsets.only(top: 45, left: 16, right: 16, bottom: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -24,8 +27,8 @@ class ClassBookedScreenDetail extends StatelessWidget {
                 Container(
                   height: 250,
                   decoration: BoxDecoration(
-                    image: const DecorationImage(
-                      image: AssetImage('assets/images/karate.jpg'),
+                    image: DecorationImage(
+                      image: AssetImage(imageUrl),
                       fit: BoxFit.cover,
                     ),
                     borderRadius: BorderRadius.circular(8.0),
@@ -71,51 +74,51 @@ class ClassBookedScreenDetail extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Kategori, Coach, Start time, End time, Room, Price
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Category', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
-                Text('Karate', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                const Text('Category', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                Text(classItem.category, style: const TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 8),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Coach', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
-                Text('Leonard', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                const Text('Coach', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                Text(classItem.coach, style: const TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 8),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Start Time', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
-                Text('17:00', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                const Text('Start Time', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                Text(DateFormat('HH:mm').format(classItem.startTime), style: const TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 8),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('End Time', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
-                Text('19:00', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                const Text('End Time', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                Text(DateFormat('HH:mm').format(classItem.endTime), style: const TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 8),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Room', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
-                Text('Ruangan A', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                const Text('Room', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                Text(classItem.room, style: const TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 8),
-            const Row(
+             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Price', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
-                Text('Rp20.000', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                const Text('Price', style: TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
+                Text('Rp${classItem.price}', style: const TextStyle(fontSize: 16,color: Color(0xFF697684),fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 12),
@@ -136,9 +139,9 @@ class ClassBookedScreenDetail extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Deskripsi kelas
-            const Text(
-              'Join us for a fun and engaging Karate class with Coach Leonard. This class is suitable for all levels, from beginners to advanced students. It focuses on building strength, flexibility, and discipline through a variety of Karate techniques.',
-              style: TextStyle(fontSize: 16,color: Color(0xFF697684)),
+            Text(
+              classItem.description,
+              style: const TextStyle(fontSize: 16,color: Color(0xFF697684)),
             ),
             const SizedBox(height: 16),
 
@@ -190,3 +193,19 @@ class ClassBookedScreenDetail extends StatelessWidget {
     
   }
 }
+String _getCategoryImage(String category) {
+    switch (category.toLowerCase()) {
+      case 'boxing':
+        return 'assets/images/boxing.jpg';
+      case 'karate':
+        return 'assets/images/karate.jpg';
+      case 'yoga':
+        return 'assets/images/yoga.jpg';
+      case 'zumba':
+        return 'assets/images/zumba.jpg';
+      case 'muay thai':
+        return 'assets/images/muaythai.jpg';
+      default:
+        return 'assets/images/default_class.jpg'; // Gambar default jika kategori tidak ditemukan
+    }
+  }
