@@ -189,14 +189,6 @@ class ListClassMember extends StatelessWidget {
                                           color: Colors.white,
                                         ),
                                       ),
-                                      Text(
-                                        'Quota: ${classItem.quota - classItem.registeredCount} slots available',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 12,
-                                          color: Colors.white,
-                                        ),
-                                      ),
                                     ],
                                   ),
                                 ),

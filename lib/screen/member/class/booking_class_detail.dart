@@ -1,9 +1,10 @@
 import 'package:active_core/models/classes.dart';
 import 'package:active_core/screen/member/class/class_booked_details.dart';
 import 'package:flutter/material.dart';
+import 'package:active_core/api/member_service.dart';
 import 'package:intl/intl.dart';
 
-class ClassBookingScreenDetail extends StatelessWidget {
+class ClassBookingScreenDetail extends StatefulWidget {
   final String category;
   final Classes classItem;
 
@@ -11,11 +12,32 @@ class ClassBookingScreenDetail extends StatelessWidget {
       {super.key, required this.category, required this.classItem});
 
   @override
+  State<ClassBookingScreenDetail> createState() =>
+      _ClassBookingScreenDetailState();
+}
+
+class _ClassBookingScreenDetailState extends State<ClassBookingScreenDetail> {
+  final ClassService _classService = ClassService();
+  Future<Map<String, dynamic>>? _bookingFuture;
+  late int availableQuota;
+
+   @override
+  void initState() {
+    super.initState();
+    availableQuota = widget.classItem.quota;
+  }
+  void _bookClass() {
+    setState(() {
+      _bookingFuture = _classService.bookClass(widget.classItem.id);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     String formattedDate =
-        DateFormat('EEEE, d MMMM yyyy').format(classItem.date);
-    final imageUrl = _getCategoryImage(category);
-    int availableQuota = classItem.quota;
+        DateFormat('EEEE, d MMMM yyyy').format(widget.classItem.date);
+    final imageUrl = _getCategoryImage(widget.category);
+
 
     return Scaffold(
       body: SafeArea(
@@ -54,7 +76,7 @@ class ClassBookingScreenDetail extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                '${classItem.category} Class',
+                '${widget.classItem.category} Class',
                 style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -71,7 +93,7 @@ class ClassBookingScreenDetail extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF697684))),
               const SizedBox(height: 4),
-              Text(classItem.description,
+              Text(widget.classItem.description,
                   style:
                       const TextStyle(fontSize: 16, color: Color(0xFF697684))),
               const SizedBox(height: 8),
@@ -85,7 +107,7 @@ class ClassBookingScreenDetail extends StatelessWidget {
                         color: Color(0xFF697684)),
                   ),
                   Text(
-                    classItem.coach,
+                    widget.classItem.coach,
                     style:
                         const TextStyle(fontSize: 16, color: Color(0xFF697684)),
                   ),
@@ -102,7 +124,7 @@ class ClassBookingScreenDetail extends StatelessWidget {
                         color: Color(0xFF697684)),
                   ),
                   Text(
-                    DateFormat('HH:mm').format(classItem.startTime),
+                    DateFormat('HH:mm').format(widget.classItem.startTime),
                     style:
                         const TextStyle(fontSize: 16, color: Color(0xFF697684)),
                   ),
@@ -121,7 +143,7 @@ class ClassBookingScreenDetail extends StatelessWidget {
                         color: Color(0xFF697684)),
                   ),
                   Text(
-                    DateFormat('HH:mm').format(classItem.endTime),
+                    DateFormat('HH:mm').format(widget.classItem.endTime),
                     style:
                         const TextStyle(fontSize: 16, color: Color(0xFF697684)),
                   ),
@@ -140,7 +162,7 @@ class ClassBookingScreenDetail extends StatelessWidget {
                         color: Color(0xFF697684)),
                   ),
                   Text(
-                    classItem.room,
+                    widget.classItem.room,
                     style:
                         const TextStyle(fontSize: 16, color: Color(0xFF697684)),
                   ),
@@ -159,7 +181,7 @@ class ClassBookingScreenDetail extends StatelessWidget {
                         color: Color(0xFF697684)),
                   ),
                   Text(
-                    'Rp${classItem.price}',
+                    'Rp${widget.classItem.price}',
                     style:
                         const TextStyle(fontSize: 16, color: Color(0xFF697684)),
                   ),
@@ -196,36 +218,90 @@ class ClassBookingScreenDetail extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ElevatedButton(
-            onPressed: availableQuota > 0
-                ? () {
-                    // Navigasi ke halaman ClassBookedScreenDetail
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ClassBookedScreenDetail(
-                          classItem:
-                              classItem, // Kirim classItem ke halaman berikutnya
+        padding: const EdgeInsets.all(16.0),
+        child: FutureBuilder<Map<String, dynamic>>(
+          future: _bookingFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return ElevatedButton(
+                onPressed: null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  fixedSize: const Size(400, 55),
+                ),
+                child: const CircularProgressIndicator(color: Colors.white),
+              );
+            } else if (snapshot.hasData) {
+              final result = snapshot.data!;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (result['success']) {
+                  // Tampilkan dialog sukses
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Success'),
+                      content: Text(result['message']),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ClassBookedScreenDetail(
+                                  classItem: widget.classItem,
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text('OK'),
                         ),
-                      ),
-                    );
-                  }
-                : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: availableQuota > 0
-                  ? const Color.fromARGB(255, 0, 123, 255)
-                  : const Color(0xFF697684),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              fixedSize: const Size(400, 55),
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-            ),
-            child: Text(
-              availableQuota > 0 ? 'Book Now' : 'Class Full',
-              style: const TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          )),
+                      ],
+                    ),
+                  );
+                } else {
+                  // Tampilkan dialog error
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Error'),
+                      content: Text(result['message']),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              });
+            }
+
+            return ElevatedButton(
+              onPressed: availableQuota > 0 ? _bookClass : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: availableQuota > 0
+                    ? const Color.fromARGB(255, 0, 123, 255)
+                    : const Color(0xFF697684),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                fixedSize: const Size(400, 55),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              ),
+              child: Text(
+                availableQuota > 0 ? 'Book Now' : 'Class Full',
+                style: const TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -242,7 +318,7 @@ class ClassBookingScreenDetail extends StatelessWidget {
       case 'muay thai':
         return 'assets/images/muaythai.jpg';
       default:
-        return 'assets/images/default_class.jpg'; // Gambar default jika kategori tidak ditemukan
+        return 'assets/images/default_class.jpg';
     }
   }
 }
