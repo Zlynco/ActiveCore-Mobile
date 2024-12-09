@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ClassService {
   final String baseUrl =
-      'http://192.168.100.98/gymactivecore/public/api'; // Ganti dengan URL API Anda
+      'http://192.168.221.26/gymactivecore/public/api'; // Ganti dengan URL API Anda
 
   /// Get list of classes
   Future<List<Classes>> fetchClasses() async {
