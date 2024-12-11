@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 
 class CoachService {
-  final String baseUrl = 'http://192.168.221.26/gymactivecore/public/api'; // Ganti dengan URL API Anda
+  final String baseUrl = 'http://192.168.82.26/gymactivecore/public/api'; // Ganti dengan URL API Anda
   final Logger logger = Logger();
 
   // Fungsi untuk mengambil kelas dari API

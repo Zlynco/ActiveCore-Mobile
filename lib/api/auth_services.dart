@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  final String baseUrl = 'http://192.168.221.26/gymactivecore/public/api'; // Ganti dengan URL API Anda
+  final String baseUrl = 'http://192.168.82.26/gymactivecore/public/api'; // Ganti dengan URL API Anda
     final Logger logger = Logger();
 
 // Fungsi login yang mengembalikan token
